@@ -1,0 +1,84 @@
+ssl_certificate /etc/letsencrypt/live/${COLLABORA_DOMAIN}/fullchain.pem;
+ssl_certificate_key /etc/letsencrypt/live/${COLLABORA_DOMAIN}/privkey.pem;
+include /etc/letsencrypt/options-ssl-nginx.conf;
+ssl_dhparam /etc/letsencrypt/ssl-dhparams.pem;
+server_tokens off;
+
+
+server {
+	
+	listen			80;
+	server_name		www.${COLLABORA_DOMAIN} ${COLLABORA_DOMAIN};
+	
+	location /.well-known/acme-challenge/ {
+		root /var/www/certbot;
+	}
+	
+	location / {
+		return 301 https://${COLLABORA_DOMAIN}$request_uri;
+	}
+}
+
+
+server {
+	
+	listen			443 ssl;
+	server_name		www.${COLLABORA_DOMAIN};
+	return 301 $scheme://${COLLABORA_DOMAIN}$request_uri;
+
+}
+
+
+server {
+	
+	listen			443 ssl;
+	server_name		${COLLABORA_DOMAIN};
+    
+	location / {
+		proxy_pass http://collabora:9980;
+		access_log off;
+		proxy_set_header Host $host;
+	}
+    
+	# static files
+	location ^~ /loleaflet {
+		proxy_pass http://collabora:9980;
+		proxy_set_header Host $http_host;
+	}
+
+	# WOPI discovery URL
+		location ^~ /hosting/discovery {
+        	proxy_pass http://collabora:9980;
+        	proxy_set_header Host $http_host;
+        }
+
+	# Capabilities
+	location ^~ /hosting/capabilities {
+		proxy_pass http://collabora:9980;
+		proxy_set_header Host $http_host;
+	}
+
+	# main websocket
+	location ~ ^/lool/(.*)/ws$ {
+		proxy_pass http://collabora:9980;
+		proxy_set_header Upgrade $http_upgrade;
+		proxy_set_header Connection "Upgrade";
+		proxy_set_header Host $http_host;
+		proxy_read_timeout 36000s;
+	}
+
+	# download, presentation and image upload
+	location ~ ^/lool {
+		proxy_pass http://collabora:9980;
+		proxy_set_header Host $http_host;
+	}
+
+	# Admin Console websocket
+	location ^~ /lool/adminws {
+		proxy_pass http://collabora:9980;
+        	proxy_set_header Upgrade $http_upgrade;
+        	proxy_set_header Connection "Upgrade";
+        	proxy_set_header Host $http_host;
+        	proxy_read_timeout 36000s;
+        }
+}

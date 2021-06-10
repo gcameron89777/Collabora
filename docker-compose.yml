@@ -1,0 +1,51 @@
+version: '3'
+
+services:
+  nginx:
+    image: nginx:latest
+    restart: unless-stopped
+    volumes:
+      - ./templates:/etc/nginx/templates
+      - ./data/certbot/conf:/etc/letsencrypt
+      - ./data/certbot/www:/var/www/certbot
+      - ./entry-scripts/40-reload.sh:/docker-entrypoint.d/40-reload.sh
+    ports:
+      - "80:80"
+      - "443:443"
+    networks:
+      - collabora
+    env_file: .env
+    depends_on:
+      - collabora
+    
+  certbot:
+    image: certbot/certbot
+    restart: unless-stopped
+    volumes:
+      - ./data/certbot/conf:/etc/letsencrypt
+      - ./data/certbot/www:/var/www/certbot
+    networks:
+      - collabora
+    entrypoint: "/bin/sh -c 'trap exit TERM; while :; do certbot renew; sleep 12h & wait $${!}; done;'"
+
+  collabora:
+    image: collabora/code
+    container_name: collabora
+    restart: always
+    cap_add:
+      - MKNOD
+    environment:
+      - "extra_params=--o:ssl.enable=false --o:ssl.termination=true"
+      - domain=${NEXTCLOUD_DOMAIN}
+      - dictionaries=en_US
+      - VIRTUAL_PORT=9980
+    expose:
+      - "9980"
+    volumes:
+      - ./appdata/collabora:/config
+    networks:
+      - collabora
+    env_file: .env
+
+networks:
+  collabora: {}
