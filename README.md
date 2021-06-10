@@ -25,7 +25,7 @@ To use this repo you will need a server running docker and docker compose and a 
 
 A file missing from the repo is the .env file which contains the following personalized settings. If you clone this repo, then create a .env file, add it to root and include the following 3 variables:
 
-_Escape dots with backslashes in the NEXTCLOUD_DOMAIN variable, e.g. if you use Hetzner for a turnkey Nextcloud instance with their storage share plan, this variable will look something like this: nx12345\.your-storageshare\.de_
+_Escape dots with backslashes in the NEXTCLOUD_DOMAIN variable, e.g. if you use Hetzner for a turnkey Nextcloud instance with their storage share plan, this variable will look something like this: nx12345\\.your-storageshare\\.de_
 
  * NEXTCLOUD_DOMAIN=[the domain of your nextcloud instance]
  * COLLABORA_DOMAIN=[your domain for use with collabora]
