@@ -35,11 +35,9 @@ _Escape dots with backslashes in the NEXTCLOUD_DOMAIN variable, e.g. if you use 
 
 This repo uses [nginx envsubst](https://github.com/docker-library/docs/tree/master/nginx#using-environment-variables-in-nginx-configuration-new-in-119) to read the variables in .env (step 1 above) and to then populate the nginx conf file to set up a server and redirects with the SSL certificate. 
 
-The file `entry-scripts/40-reload.sh` is added to docker-entrypoint.d directory on the nginx container. Shell files in this directory are run automatically before nginx starts (this is where envsubst is done). 
+The file `entry-scripts/40-reload.sh` is added to docker-entrypoint.d directory on the nginx container. Shell files in this directory are run automatically before nginx starts (this is where envsubst is done). This file reloads nginx every minute in case a newly renewed certificate has been pulled. 
 
-The file `40-reload.sh` reloads nginx every minute in case a newly renewed certificate has been pulled. 
-
-File `templates/default.conf.template` is the nginx conf file that contains variable placeholders for the domain name which is sourced from the .env during envsubst. This file configures the nginx server as well as redirects from http to https.
+File `templates/default.conf.template` is the nginx conf file that contains variable placeholders for the domain name which is sourced from the `.env` during envsubst. This file configures the nginx server as well as redirects from http to https.
 
 
 
