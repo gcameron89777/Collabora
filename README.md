@@ -1,20 +1,20 @@
 # Collabora CODE
 
-The purpose of this repo is to provide a [Collabora CODE](https://www.collaboraoffice.com/code/) server via docker for use with my Nextcloud instance. Collabora CODE allows for online editing of libre office documents such as ods (spreadsheets) or odt (word editing).
+The purpose of this repo is to provide a [Collabora CODE ("Collabora Online Development Edition")](https://www.collaboraoffice.com/code/) server via Docker for use with [Nextcloud](https://nextcloud.com/). Collabora CODE allows for online editing of libre office documents such as ods (spreadsheets) or odt (word editing).
 
-Collabora code is accessed by Nextcloud via a url in the settings.
+Collabora CODE is accessed by Nextcloud via a url in the settings.
 
 # What this repo does
 
 This repo draws heavily from [nginx and certbot](https://github.com/wmnnd/nginx-certbot) repo to obtain a SSL certificate from [Letsencrypt](https://letsencrypt.org/) that automatically renews. This SSL certificate is then applied to the domain mentioned above for use with Collabora CODE.
 
-# Inputs needed
+# Prerequisites
 
 To use this repo you will need a server running docker and docker compose and a domain name that is pointed to the server.
 
 # Instructions
 
-1. Add the .env file and variables within
+1. Add the .env file and variables within (See the first sentence at the end of this list).
 2. Copy the files to your server, including docker-compose.yml, init-letsencrypt.sh, entry-scripts/40-reload.sh and templates/default.conf.template.
 3. Run the init script `./init-letsencrypt.sh` to obtain your initial Lets Encrypt certificate. After this script runs you should see various output in the terminal confirming the obtainment of the certificate. For fuller details see the [repo highlighted above that I drew on to create this set up](https://github.com/wmnnd/nginx-certbot).
 4. The init-letsencrypt.sh script should leave two docker services running, nginx and collabora. Verify with `docker ps`, you should see the two services running.
@@ -33,10 +33,13 @@ _Escape dots with backslashes in the NEXTCLOUD_DOMAIN variable, e.g. if you use 
 
 # How it works
 
-This repo uses [nginx envsubst](https://github.com/docker-library/docs/tree/master/nginx#using-environment-variables-in-nginx-configuration-new-in-119) to read the variables in .env (step 1 above) and to then populate nginx conf file to set up a server and redirects with the SSL certificate. The file `entry-scripts/40-reload.sh` is added to docker-entrypoint.d directory on the nginx container. Shell files in this directory are run automatically before nginx starts (this is where envsubst is done). The file `40-reload.sh` reloads nginx every minute in case a newly renewed certificate has been pulled. File `templates/default.conf.template` is the nginx conf file that contains variable placeholders for the domain name which is sourced from .env during envsubst. This file configures the nginx server as well as redirects from http to https. 
+This repo uses [nginx envsubst](https://github.com/docker-library/docs/tree/master/nginx#using-environment-variables-in-nginx-configuration-new-in-119) to read the variables in .env (step 1 above) and to then populate the nginx conf file to set up a server and redirects with the SSL certificate. 
 
+The file `entry-scripts/40-reload.sh` is added to docker-entrypoint.d directory on the nginx container. Shell files in this directory are run automatically before nginx starts (this is where envsubst is done). 
 
+The file `40-reload.sh` reloads nginx every minute in case a newly renewed certificate has been pulled. 
 
+File `templates/default.conf.template` is the nginx conf file that contains variable placeholders for the domain name which is sourced from the .env during envsubst. This file configures the nginx server as well as redirects from http to https.
 
 
 
