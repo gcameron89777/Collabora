@@ -1,6 +1,6 @@
 # Collabora CODE
 
-The purpose of this repo is to provide a [Collabora CODE ("Collabora Online Development Edition")](https://www.collaboraoffice.com/code/) server via Docker for use with [Nextcloud](https://nextcloud.com/). Collabora CODE allows for online editing of libre office documents such as ods (spreadsheets) or odt (word editing).
+The purpose of this repo is to provide a [Collabora CODE ("Collabora Online Development Edition")](https://www.collaboraoffice.com/code/) server via Docker for use with [Nextcloud](https://nextcloud.com/). Collabora CODE allows for online editing of Libre Office documents such as ods (spreadsheets) or odt (word editing).
 
 Collabora CODE is accessed by Nextcloud via a url in the settings.
 
@@ -10,14 +10,14 @@ This repo draws heavily from [nginx and certbot](https://github.com/wmnnd/nginx-
 
 # Prerequisites
 
-To use this repo you will need a server running docker and docker compose and a domain name that is pointed to the server.
+To use this repo you will need a server running Docker and Docker compose and a domain name that is pointed to the server.
 
 # Instructions
 
 1. Add the .env file and variables within (See the first sentence at the end of this list).
 2. Copy the files to your server, including docker-compose.yml, init-letsencrypt.sh, entry-scripts/40-reload.sh and templates/default.conf.template.
 3. Run the init script `./init-letsencrypt.sh` to obtain your initial Lets Encrypt certificate. After this script runs you should see various output in the terminal confirming the obtainment of the certificate. For fuller details see the [repo highlighted above that I drew on to create this set up](https://github.com/wmnnd/nginx-certbot).
-4. The init-letsencrypt.sh script should leave two docker services running, nginx and collabora. Verify with `docker ps`, you should see the two services running.
+4. The init-letsencrypt.sh script should leave two Docker services running, nginx and collabora. Verify with `docker ps`, you should see the two services running.
 5. Run the certbot service for auto renewal with `docker-compose up -d certbot`. You should now see 3 services running with `docker ps`.
 6. Visit https://[your domain] in your browser and you should see the OK message.
 7. Paste your url including the https protocol in Nextcloud > Settings > Collabora Online Development Edition > Use your own server > URL input field. When you hit save you should see a green button and message 'Collabora online server is reachable'
